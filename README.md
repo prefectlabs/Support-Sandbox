@@ -1,4 +1,4 @@
-# mm2-sanbox — Prefect Patterns
+# Support-Sandbox — Prefect Patterns
 
 A reference repo of common Prefect patterns, each as a standalone, runnable example. Paired with Terraform infrastructure-as-code using the [PrefectHQ Terraform provider](https://registry.terraform.io/providers/PrefectHQ/prefect/latest/docs) and Helm values for deploying Prefect workers to Kubernetes.
 
