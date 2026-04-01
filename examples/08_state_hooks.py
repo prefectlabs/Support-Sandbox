@@ -15,6 +15,7 @@ Set SLACK_CREDENTIALS_BLOCK to the block name (default: "slack-creds").
 Run locally:
     uv run python examples/08_state_hooks.py
 """
+
 import asyncio
 import os
 
@@ -24,19 +25,18 @@ from prefect.flows import Flow
 from prefect.states import State
 from prefect_slack import SlackCredentials
 
-
 SLACK_CREDENTIALS_BLOCK = os.getenv("SLACK_CREDENTIALS_BLOCK", "slack-creds")
 
 
 async def notify_slack(flow: Flow, flow_run: FlowRun, state: State) -> None:
     """Send a Slack message when the flow enters a failure or crashed state."""
     slack_channel = flow_run.parameters.get("slack_channel", "#alerts")
-    creds = await SlackCredentials.load(SLACK_CREDENTIALS_BLOCK)
+    creds = await SlackCredentials.load(SLACK_CREDENTIALS_BLOCK)  # ty:ignore[invalid-await]
     client = creds.get_client()
     await client.chat_postMessage(
         channel=slack_channel,
         text=(
-            f":red_circle: *Flow run {state.name.lower()}*\n"
+            f":red_circle: *Flow run {state.name.lower()}*\n"  # ty:ignore[unresolved-attribute]
             f"Flow: `{flow.name}`\n"
             f"Run: `{flow_run.name}` ({flow_run.id})\n"
             f"State message: {state.message or 'none'}"

@@ -19,6 +19,7 @@ would attempt to launch the flow again, causing runaway process creation.
 Run locally:
     uv run python examples/11_process_pool.py
 """
+
 import hashlib
 import multiprocessing
 
@@ -35,13 +36,20 @@ def cpu_bound_task(payload: str) -> dict:
     return {"payload": payload, "digest": digest[:16]}
 
 
-@flow(task_runner=ProcessPoolTaskRunner(max_workers=multiprocessing.cpu_count()), log_prints=True)
-def process_pool_flow(items: list[str] = [f"item-{i}" for i in range(8)]) -> None:
+@flow(
+    task_runner=ProcessPoolTaskRunner(max_workers=multiprocessing.cpu_count()),
+    log_prints=True,
+)  # ty:ignore[no-matching-overload]
+def process_pool_flow(items: list[str] | None = None) -> None:
+    if items is None:
+        items = [f"item-{i}" for i in range(8)]
     # .map() submits all tasks concurrently across worker processes.
     # Each process runs independently — no shared memory between tasks.
     futures = cpu_bound_task.map(items)
     results = [f.result() for f in futures]
-    print(f"Processed {len(results)} items across {multiprocessing.cpu_count()} processes")
+    print(
+        f"Processed {len(results)} items across {multiprocessing.cpu_count()} processes"
+    )
 
 
 if __name__ == "__main__":

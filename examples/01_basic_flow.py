@@ -5,6 +5,7 @@ Demonstrates: @flow, @task, retries, log_prints
 Run locally:
     uv run python examples/01_basic_flow.py
 """
+
 import random
 import time
 

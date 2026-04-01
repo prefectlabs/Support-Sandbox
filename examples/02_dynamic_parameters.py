@@ -9,11 +9,12 @@ run flows with validated, type-safe inputs without touching code.
 Run locally:
     uv run python examples/02_dynamic_parameters.py
 """
+
 import datetime
 import enum
 
+from prefect import flow, get_run_logger, task
 from pydantic import BaseModel, Field
-from prefect import flow, task, get_run_logger
 
 
 class Environment(enum.StrEnum):
@@ -45,7 +46,9 @@ def process_asset(asset: str, environment: str, date: datetime.datetime) -> str:
 
 
 @flow(log_prints=True)
-def demo_flow(config: RunConfig = RunConfig()) -> None:
+def demo_flow(config: RunConfig | None = None) -> None:
+    if config is None:
+        config = RunConfig()
     logger = get_run_logger()
     logger.info(f"Starting run for {config.date.date()} in {config.environment}")
 

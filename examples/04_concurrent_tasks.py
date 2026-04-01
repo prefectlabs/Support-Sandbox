@@ -13,6 +13,7 @@ Use ProcessPoolTaskRunner for CPU-bound work instead.
 Run locally:
     uv run python examples/04_concurrent_tasks.py
 """
+
 import time
 
 from prefect import flow, task
@@ -26,8 +27,10 @@ def process_item(item: int) -> dict:
     return {"item": item, "result": item * 2}
 
 
-@flow(task_runner=ThreadPoolTaskRunner(max_workers=10), log_prints=True)
-def concurrent_tasks_flow(items: list[int] = list(range(20))) -> None:
+@flow(task_runner=ThreadPoolTaskRunner(max_workers=10), log_prints=True)  # ty: ignore[no-matching-overload]
+def concurrent_tasks_flow(items: list[int] | None = None) -> None:
+    if items is None:
+        items = list(range(20))
     # .map() submits all tasks concurrently — the task runner controls parallelism.
     # All 20 items run with up to 10 concurrent workers instead of sequentially.
     futures = process_item.map(items)

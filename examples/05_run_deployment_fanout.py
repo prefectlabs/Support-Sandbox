@@ -13,12 +13,12 @@ This file defines both flows. Deploy both before running the parent:
 Run locally (skips deployment, calls child_flow directly):
     uv run python examples/05_run_deployment_fanout.py
 """
+
 import asyncio
 from datetime import datetime, timedelta
 
 from prefect import flow, get_run_logger
 from prefect.deployments import run_deployment
-
 
 # Matches the deployment name defined in prefect.yaml for child_flow
 CHILD_DEPLOYMENT_NAME = "child-flow/child-flow"
@@ -27,6 +27,7 @@ CHILD_DEPLOYMENT_NAME = "child-flow/child-flow"
 # ---------------------------------------------------------------------------
 # Child flow — deployed independently, accepts a single date to process
 # ---------------------------------------------------------------------------
+
 
 @flow(log_prints=True)
 def child_flow(date: str) -> dict:
@@ -45,6 +46,7 @@ def child_flow(date: str) -> dict:
 # Parent flow — submits one child deployment run per date, polls for completion
 # ---------------------------------------------------------------------------
 
+
 @flow(log_prints=True)
 async def parent_flow(start_date: str = "01-01-2025", n_days: int = 5) -> None:
     """Fan out to child_flow deployments, one per date, and wait for all to finish.
@@ -61,14 +63,16 @@ async def parent_flow(start_date: str = "01-01-2025", n_days: int = 5) -> None:
 
     # Submit all child runs concurrently and wait for each to finish.
     # Swap timeout=None for timeout=0 to fire-and-forget instead.
-    await asyncio.gather(*[
-        run_deployment(
-            name=CHILD_DEPLOYMENT_NAME,
-            parameters={"date": str(d)},
-            timeout=None,
-        )
-        for d in dates
-    ])
+    await asyncio.gather(
+        *[
+            run_deployment(
+                name=CHILD_DEPLOYMENT_NAME,
+                parameters={"date": str(d)},
+                timeout=None,
+            )
+            for d in dates
+        ]
+    )  # ty:ignore[no-matching-overload]
 
     logger.info("All child runs complete")
 

@@ -14,14 +14,14 @@ Set SLACK_WEBHOOK_URL to your Slack incoming webhook URL.
 Run locally:
     uv run python examples/09_automations.py
 """
+
 import os
 
-from prefect import flow, task, get_run_logger
+from prefect import flow, get_run_logger, task
 from prefect.automations import Automation
 from prefect.blocks.notifications import SlackWebhook
-from prefect.events.schemas.automations import EventTrigger
 from prefect.events.actions import SendNotification
-
+from prefect.events.schemas.automations import EventTrigger
 
 SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL", "")
 SLACK_BLOCK_NAME = "python-managed-slack-webhook"
@@ -39,7 +39,7 @@ State message: {{ flow_run.state.message }}
 def upsert_slack_block(url: str, block_name: str) -> SlackWebhook:
     """Create or overwrite the SlackWebhook block."""
     logger = get_run_logger()
-    block = SlackWebhook(url=url)
+    block = SlackWebhook(url=url)  # ty:ignore[invalid-argument-type]
     block.save(block_name, overwrite=True)
     logger.info(f"Saved SlackWebhook block: '{block_name}'")
     return block
@@ -51,7 +51,7 @@ def upsert_automation(automation: Automation) -> None:
     logger = get_run_logger()
     try:
         existing = Automation.read(name=automation.name)
-        existing.delete()
+        existing.delete()  # ty:ignore[unresolved-attribute]
         logger.info(f"Deleted existing automation: '{automation.name}'")
     except ValueError:
         pass
@@ -73,12 +73,12 @@ def deploy_slack_notifications() -> None:
             },
             match={"prefect.resource.id": "prefect.flow-run.*"},
             for_each={"prefect.resource.id"},
-            posture="Reactive",
+            posture="Reactive",  # ty:ignore[invalid-argument-type]
             threshold=1,
         ),
         actions=[
             SendNotification(
-                block_document_id=block._block_document_id,
+                block_document_id=block._block_document_id,  # ty:ignore[invalid-argument-type]
                 subject="Prefect flow run issue",
                 body=NOTIFICATION_BODY.strip(),
             )

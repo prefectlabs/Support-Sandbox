@@ -11,13 +11,14 @@ URL structure:
 PREFECT_API_URL already contains the full workspace-scoped base URL.
 Stripping everything from "/workspaces" onward gives the account-scoped base URL.
 """
+
 import httpx
 from prefect.settings import PREFECT_API_KEY, PREFECT_API_URL
-
 
 # ---------------------------------------------------------------------------
 # Client factories
 # ---------------------------------------------------------------------------
+
 
 def workspace_client() -> httpx.Client:
     """httpx client for workspace-scoped endpoints (deployments, flow runs, etc.)."""
@@ -40,7 +41,10 @@ def account_client() -> httpx.Client:
 # Workspace-scoped: Deployments
 # ---------------------------------------------------------------------------
 
-def filter_deployments(tags: list[str] | None = None, operator: str = "and_") -> list[dict]:
+
+def filter_deployments(
+    tags: list[str] | None = None, operator: str = "and_"
+) -> list[dict]:
     """Return deployments, optionally filtered by tags.
 
     Args:
@@ -60,6 +64,7 @@ def filter_deployments(tags: list[str] | None = None, operator: str = "and_") ->
 # ---------------------------------------------------------------------------
 # Workspace-scoped: Deployment ACLs
 # ---------------------------------------------------------------------------
+
 
 def set_deployment_access(deployment_id: str, access_control: dict) -> None:
     """Set access control on a deployment.
@@ -103,11 +108,11 @@ def grant_service_account_deployment_access(
     actor_id = sa["actor_id"]
     access_control = {
         "manage_actor_ids": [actor_id] if level == "manage" else [],
-        "run_actor_ids":    [actor_id] if level == "run" else [],
-        "view_actor_ids":   [actor_id] if level == "view" else [],
-        "manage_team_ids":  [],
-        "run_team_ids":     [],
-        "view_team_ids":    [],
+        "run_actor_ids": [actor_id] if level == "run" else [],
+        "view_actor_ids": [actor_id] if level == "view" else [],
+        "manage_team_ids": [],
+        "run_team_ids": [],
+        "view_team_ids": [],
     }
     set_deployment_access(deployment_id, access_control)
 
@@ -115,6 +120,7 @@ def grant_service_account_deployment_access(
 # ---------------------------------------------------------------------------
 # Account-scoped: Service Accounts
 # ---------------------------------------------------------------------------
+
 
 def list_service_accounts() -> list[dict]:
     """List all service accounts (bots) in the account."""
@@ -127,6 +133,7 @@ def list_service_accounts() -> list[dict]:
 # ---------------------------------------------------------------------------
 # Account-scoped: Account Roles
 # ---------------------------------------------------------------------------
+
 
 def list_account_roles() -> list[dict]:
     """List all account roles."""

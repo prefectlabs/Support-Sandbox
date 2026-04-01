@@ -23,6 +23,7 @@ Corresponding deployment trigger config (in prefect.yaml):
 Run locally:
     uv run python examples/06_custom_events.py
 """
+
 from prefect import flow, task
 from prefect.events import emit_event
 
