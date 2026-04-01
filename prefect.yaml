@@ -35,6 +35,7 @@ deployments:
     work_pool:
       name: "{{ $PREFECT_WORK_POOL_NAME }}"
       job_variables:
+        image: "{{ $PREFECT_DEPLOYMENT_IMAGE }}"
         env:
           PREFECT_ENVIRONMENT: prod
 
@@ -48,6 +49,8 @@ deployments:
     tags: [example, parameters]
     work_pool:
       name: "{{ $PREFECT_WORK_POOL_NAME }}"
+      job_variables:
+        image: "{{ $PREFECT_DEPLOYMENT_IMAGE }}"
 
   # ---------------------------------------------------------------------------
   # 03 — Task Caching
@@ -60,6 +63,7 @@ deployments:
     work_pool:
       name: "{{ $PREFECT_WORK_POOL_NAME }}"
       job_variables:
+        image: "{{ $PREFECT_DEPLOYMENT_IMAGE }}"
         env:
           S3_RESULT_BUCKET: "{{ $S3_RESULT_BUCKET }}"
           REFRESH_CACHE: "{{ $REFRESH_CACHE }}"
@@ -77,6 +81,8 @@ deployments:
       collision_strategy: ENQUEUE
     work_pool:
       name: "{{ $PREFECT_WORK_POOL_NAME }}"
+      job_variables:
+        image: "{{ $PREFECT_DEPLOYMENT_IMAGE }}"
 
   # ---------------------------------------------------------------------------
   # 05 — Run Deployment Fan-out (child)
@@ -88,6 +94,8 @@ deployments:
     tags: [example, deployment]
     work_pool:
       name: "{{ $PREFECT_WORK_POOL_NAME }}"
+      job_variables:
+        image: "{{ $PREFECT_DEPLOYMENT_IMAGE }}"
 
   # ---------------------------------------------------------------------------
   # 05 — Run Deployment Fan-out (parent)
@@ -99,6 +107,8 @@ deployments:
     tags: [example, deployment]
     work_pool:
       name: "{{ $PREFECT_WORK_POOL_NAME }}"
+      job_variables:
+        image: "{{ $PREFECT_DEPLOYMENT_IMAGE }}"
 
   # ---------------------------------------------------------------------------
   # 06 — Custom Events
@@ -122,6 +132,8 @@ deployments:
           item: "{{ event.payload['item'] }}"
     work_pool:
       name: "{{ $PREFECT_WORK_POOL_NAME }}"
+      job_variables:
+        image: "{{ $PREFECT_DEPLOYMENT_IMAGE }}"
 
   # ---------------------------------------------------------------------------
   # 07 — Schema Validation
@@ -132,6 +144,8 @@ deployments:
     tags: [example, schema]
     work_pool:
       name: "{{ $PREFECT_WORK_POOL_NAME }}"
+      job_variables:
+        image: "{{ $PREFECT_DEPLOYMENT_IMAGE }}"
 
   # ---------------------------------------------------------------------------
   # 08 — State Hooks
@@ -144,6 +158,7 @@ deployments:
     work_pool:
       name: "{{ $PREFECT_WORK_POOL_NAME }}"
       job_variables:
+        image: "{{ $PREFECT_DEPLOYMENT_IMAGE }}"
         env:
           SLACK_CREDENTIALS_BLOCK: "{{ $SLACK_CREDENTIALS_BLOCK }}"
 
@@ -158,6 +173,7 @@ deployments:
     work_pool:
       name: "{{ $PREFECT_WORK_POOL_NAME }}"
       job_variables:
+        image: "{{ $PREFECT_DEPLOYMENT_IMAGE }}"
         env:
           SLACK_WEBHOOK_URL: "{{ prefect.variables.slack_webhook_url }}"
 
@@ -170,6 +186,8 @@ deployments:
     tags: [example, dependencies]
     work_pool:
       name: "{{ $PREFECT_WORK_POOL_NAME }}"
+      job_variables:
+        image: "{{ $PREFECT_DEPLOYMENT_IMAGE }}"
 
   # ---------------------------------------------------------------------------
   # 11 — Process Pool (CPU-bound)
@@ -180,3 +198,5 @@ deployments:
     tags: [example, concurrency]
     work_pool:
       name: "{{ $PREFECT_WORK_POOL_NAME }}"
+      job_variables:
+        image: "{{ $PREFECT_DEPLOYMENT_IMAGE }}"
