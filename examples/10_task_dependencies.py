@@ -12,9 +12,10 @@ flow.with_options() creates a new version of a flow with overridden settings
 Run locally:
     uv run python examples/10_task_dependencies.py
 """
+
 import time
 
-from prefect import flow, task, get_run_logger
+from prefect import flow, get_run_logger, task
 
 
 @task(task_run_name="setup-{label}", log_prints=True)

@@ -12,13 +12,14 @@ Set REFRESH_CACHE=True to force re-computation and overwrite the cache.
 Run locally:
     uv run python examples/03_task_caching.py
 """
+
 import os
 import time
+from typing import cast
 
-from prefect import flow, task, get_run_logger
+from prefect import flow, get_run_logger, task
 from prefect.cache_policies import INPUTS
 from prefect_aws import S3Bucket
-
 
 S3_RESULT_BUCKET = os.getenv("S3_RESULT_BUCKET", "your-s3-bucket-block-name")
 REFRESH_CACHE = os.getenv("REFRESH_CACHE", "False").lower() == "true"
@@ -38,11 +39,13 @@ def compute(value: int) -> int:
 
 
 @flow(persist_result=True, log_prints=True)
-def main_flow(values: list[int] = [1, 2, 3]) -> None:
+def main_flow(values: list[int] | None = None) -> None:
+    if values is None:
+        values = [1, 2, 3]
     # Result storage is configured on the flow; tasks inherit it.
     # Load your S3Bucket block — create it once via the Prefect UI or CLI:
     #   prefect block create s3-bucket --name your-s3-bucket-block-name
-    result_storage = S3Bucket.load(S3_RESULT_BUCKET)
+    result_storage = cast(S3Bucket, S3Bucket.load(S3_RESULT_BUCKET))
     result_storage.bucket_folder = "task-cache"
 
     futures = compute.map(values)

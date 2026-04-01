@@ -16,7 +16,7 @@ worker:
     accountId: "<PREFECT_ACCOUNT_ID>"
     workspaceId: "<PREFECT_WORKSPACE_ID>"
     apiKeySecret:
-      name: "<PREFECT_API_KEY_SECRET_NAME>"  # Kubernetes secret name (default: prefect-api-key)
+      name: "<PREFECT_API_KEY_SECRET_NAME>" # Kubernetes secret name (default: prefect-api-key)
       key: key
   extraEnvVars:
     - name: PREFECT_LOGGING_ORION_WHEN_MISSING_FLOW
