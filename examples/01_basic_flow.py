@@ -28,7 +28,10 @@ def process_records(records: list[dict]) -> list[dict]:
 
 
 @flow(log_prints=True)
-def basic_flow(n: int = 10) -> None:
+def basic_flow(n: int = 10, sleep_seconds: int = 0) -> None:
+    if sleep_seconds:
+        print(f"Sleeping {sleep_seconds}s to simulate a slow run...")
+        time.sleep(sleep_seconds)
     records = fetch_records(n)
     results = process_records(records)
     print(f"Processed {len(results)} records")

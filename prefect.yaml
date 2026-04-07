@@ -37,7 +37,7 @@ deployments:
     slas:
       - name: basic-flow-duration-sla
         severity: high
-        duration: 300 # seconds — set to ~1.5x your typical run time
+        duration: 10 # seconds — lowered for testing; set to ~1.5x typical run time in prod
     work_pool:
       name: "{{ $PREFECT_WORK_POOL_NAME }}"
       job_variables:
