@@ -1,4 +1,4 @@
-# Prefect deployment configurations for the mm2-sanbox examples.
+# Prefect deployment configurations for the Support-Sandbox examples.
 #
 # Before deploying:
 #   1. Copy .env.example to .env and fill in your values
@@ -34,7 +34,7 @@ deployments:
     schedules:
       - cron: "0 9 * * 1-5"
         timezone: "America/New_York"
-    slas:
+    sla:
       - name: basic-flow-duration-sla
         severity: high
         duration: 10 # seconds — lowered for testing; set to ~1.5x typical run time in prod
