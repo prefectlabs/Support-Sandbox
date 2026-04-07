@@ -23,14 +23,9 @@ How it works (two-part setup):
 
        to the EventTrigger if you want per-deployment automation.
 
-Set SLACK_WEBHOOK_URL before running:
-    export SLACK_WEBHOOK_URL=https://hooks.slack.com/...
-
 Run:
     uv run python examples/13_sla_automation.py
 """
-
-import os
 
 from prefect import flow, get_run_logger, task
 from prefect.automations import Automation
@@ -38,8 +33,7 @@ from prefect.blocks.notifications import SlackWebhook
 from prefect.events.actions import SendNotification
 from prefect.events.schemas.automations import EventTrigger
 
-SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL", "")
-SLACK_BLOCK_NAME = "sla-slack-webhook"
+SLACK_BLOCK_NAME = "slack-test"
 AUTOMATION_NAME = "sla-breach-slack-notification"
 
 NOTIFICATION_BODY = """
@@ -52,11 +46,10 @@ State: {{ flow_run.state.name }}
 
 
 @task
-def upsert_slack_block(url: str, block_name: str) -> SlackWebhook:
+def load_slack_block(block_name: str) -> SlackWebhook:
     logger = get_run_logger()
-    block = SlackWebhook(url=url)  # ty:ignore[invalid-argument-type]
-    block.save(block_name, overwrite=True)
-    logger.info(f"Saved SlackWebhook block: '{block_name}'")
+    block: SlackWebhook = SlackWebhook.load(block_name)  # ty:ignore[invalid-assignment]
+    logger.info(f"Loaded SlackWebhook block: '{block_name}'")
     return block
 
 
@@ -74,13 +67,13 @@ def upsert_automation(automation: Automation) -> None:
 
 
 @flow(log_prints=True)
-def deploy_sla_automation() -> None:
+def deploy_sla_automation(slack_block_name: str = SLACK_BLOCK_NAME) -> None:
     """Create or update the SLA breach notification automation.
 
     Pairs with any deployment that has `slas` configured in prefect.yaml.
     When a flow run violates its SLA, this automation sends a Slack alert.
     """
-    block = upsert_slack_block(url=SLACK_WEBHOOK_URL, block_name=SLACK_BLOCK_NAME)
+    block = load_slack_block(slack_block_name)
 
     automation = Automation(
         name=AUTOMATION_NAME,
@@ -103,6 +96,4 @@ def deploy_sla_automation() -> None:
 
 
 if __name__ == "__main__":
-    if not SLACK_WEBHOOK_URL:
-        raise ValueError("Set SLACK_WEBHOOK_URL before running this example")
     deploy_sla_automation()
