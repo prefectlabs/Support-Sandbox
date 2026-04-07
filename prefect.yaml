@@ -20,6 +20,9 @@ deployments:
   # ---------------------------------------------------------------------------
   # 01 — Basic Flow
   # Scheduled daily; CANCEL_NEW prevents overlap if a run is still active.
+  # SLA: emits prefect.sla.violation if a run exceeds 5 minutes.
+  #       Adjust duration to ~1.5x your typical run time.
+  #       Pair with the 13_sla_automation deployment to receive Slack alerts.
   # ---------------------------------------------------------------------------
   - name: basic-flow
     entrypoint: examples/01_basic_flow.py:basic_flow
@@ -31,6 +34,10 @@ deployments:
     schedules:
       - cron: "0 9 * * 1-5"
         timezone: "America/New_York"
+    slas:
+      - name: basic-flow-duration-sla
+        severity: high
+        duration: 300 # seconds — set to ~1.5x your typical run time
     work_pool:
       name: "{{ $PREFECT_WORK_POOL_NAME }}"
       job_variables:
@@ -199,3 +206,59 @@ deployments:
       name: "{{ $PREFECT_WORK_POOL_NAME }}"
       job_variables:
         image: "{{ $PREFECT_DEPLOYMENT_IMAGE }}"
+
+  # ---------------------------------------------------------------------------
+  # 12 — Event-Triggered Flow Chaining (upstream)
+  # Emits myorg.pipeline.stage.completed when done; no direct coupling to
+  # the downstream deployment. Compare with 05 (run_deployment fan-out).
+  # ---------------------------------------------------------------------------
+  - name: event-triggered-upstream
+    entrypoint: examples/12_event_triggered_flow.py:upstream_flow
+    version: "{{ get-commit-hash.stdout }}"
+    tags: [example, events]
+    work_pool:
+      name: "{{ $PREFECT_WORK_POOL_NAME }}"
+      job_variables:
+        image: "{{ $PREFECT_DEPLOYMENT_IMAGE }}"
+
+  # ---------------------------------------------------------------------------
+  # 12 — Event-Triggered Flow Chaining (downstream)
+  # Triggered automatically when upstream_flow emits its completion event.
+  # Parameters are extracted from the event payload — no code coupling needed.
+  # ---------------------------------------------------------------------------
+  - name: event-triggered-downstream
+    entrypoint: examples/12_event_triggered_flow.py:downstream_flow
+    version: "{{ get-commit-hash.stdout }}"
+    tags: [example, events]
+    triggers:
+      - type: event
+        enabled: true
+        name: upstream-stage-completed
+        description: "Fires when upstream_flow emits a pipeline stage completion event"
+        expect:
+          - "myorg.pipeline.stage.completed"
+        match:
+          "prefect.resource.id": "myorg.pipeline.*"
+        parameters:
+          dataset: "{{ event.payload['dataset'] }}"
+          upstream_output: "{{ event.payload['output_path'] }}"
+    work_pool:
+      name: "{{ $PREFECT_WORK_POOL_NAME }}"
+      job_variables:
+        image: "{{ $PREFECT_DEPLOYMENT_IMAGE }}"
+
+  # ---------------------------------------------------------------------------
+  # 13 — SLA Breach Automation
+  # Run this deployment to provision the SLA violation Slack notification.
+  # Works with any deployment that has `slas` configured (e.g. basic-flow).
+  # ---------------------------------------------------------------------------
+  - name: sla-automation
+    entrypoint: examples/13_sla_automation.py:deploy_sla_automation
+    version: "{{ get-commit-hash.stdout }}"
+    tags: [example, automations, sla]
+    work_pool:
+      name: "{{ $PREFECT_WORK_POOL_NAME }}"
+      job_variables:
+        image: "{{ $PREFECT_DEPLOYMENT_IMAGE }}"
+        env:
+          SLACK_WEBHOOK_URL: "{{ prefect.variables.slack_webhook_url }}"
