@@ -4,7 +4,7 @@ version = "0.2.0"
 description = "Prefect examples and patterns"
 requires-python = ">=3.12"
 dependencies = [
-    "prefect[aws,docker,kubernetes,shell]>=3.6.4",
+    "prefect[aws,docker,kubernetes,shell,gcp]>=3.6.4",
     "prefect-slack>=0.2",
     "pytz>=2024.1",
 ]

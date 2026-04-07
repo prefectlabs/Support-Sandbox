@@ -1,4 +1,4 @@
-# Prefect deployment configurations for the mm2-sanbox examples.
+# Prefect deployment configurations for the prefectlabs/Support-Sandbox examples.
 #
 # Before deploying:
 #   1. Copy .env.example to .env and fill in your values
@@ -13,7 +13,7 @@ build:
 
 pull:
   - prefect.deployments.steps.git_clone:
-      repository: https://github.com/masonmenges/mm2-sanbox.git
+      repository: https://github.com/prefectlabs/Support-Sandbox.git
       branch: main
 
 deployments:
@@ -195,6 +195,27 @@ deployments:
     entrypoint: examples/11_process_pool.py:process_pool_flow
     version: "{{ get-commit-hash.stdout }}"
     tags: [example, concurrency]
+    work_pool:
+      name: "{{ $PREFECT_WORK_POOL_NAME }}"
+      job_variables:
+        image: "{{ $PREFECT_DEPLOYMENT_IMAGE }}"
+
+  # ---------------------------------------------------------------------------
+  # 12 — Flow Level Caching
+  # ---------------------------------------------------------------------------
+  - name: generate-gcs-report
+    entrypoint: examples/12_flow_level_caching.py:generate_report_flow
+    version: "{{ get-commit-hash.stdout }}"
+    tags: [example, caching, concurrency]
+    work_pool:
+      name: "{{ $PREFECT_WORK_POOL_NAME }}"
+      job_variables:
+        image: "{{ $PREFECT_DEPLOYMENT_IMAGE }}"
+
+  - name: transform-gcs-report-data
+    entrypoint: examples/12_flow_level_caching.py:transform_data
+    version: "{{ get-commit-hash.stdout }}"
+    tags: [example, caching, concurrency]
     work_pool:
       name: "{{ $PREFECT_WORK_POOL_NAME }}"
       job_variables:
