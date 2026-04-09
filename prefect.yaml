@@ -1,4 +1,3 @@
-
 # Prefect deployment configurations for the Support-Sandbox examples.
 #
 # Before deploying:
@@ -266,6 +265,7 @@ deployments:
 
   # ---------------------------------------------------------------------------
   # 14 — Flow Level Caching
+  # Run `generate-gcs-report`, which orchestrates the transform flow to generate a report.
   # ---------------------------------------------------------------------------
   - name: generate-gcs-report
     entrypoint: examples/14_flow_level_caching.py:generate_report
