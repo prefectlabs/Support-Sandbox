@@ -17,7 +17,7 @@ A reference repo of common Prefect patterns, each as a standalone, runnable exam
 | `examples/09_automations.py` | Programmatic Automations | `Automation` SDK, infra-as-code |
 | `examples/10_task_dependencies.py` | Task Dependencies | `wait_for`, `task_run_name`, `flow.with_options()` |
 | `examples/11_process_pool.py` | Concurrent Tasks (CPU-bound) | `ProcessPoolTaskRunner`, spawn guard, picklability |
-| `examples/12_flow_level_caching.py` | Flow Level Caching | `ThreadPoolTaskRunner`, result storage & caching, `run_deployment()` |
+| `examples/14_flow_level_caching.py` | Flow Level Caching | `ThreadPoolTaskRunner`, result storage & caching, `run_deployment()` |
 
 ## Prerequisites
 

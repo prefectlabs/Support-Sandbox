@@ -14,7 +14,7 @@ build:
 pull:
   - prefect.deployments.steps.git_clone:
       repository: https://github.com/prefectlabs/Support-Sandbox.git
-      branch: feat/add-flow-level-caching-example
+      branch: main
 
 deployments:
   # ---------------------------------------------------------------------------
