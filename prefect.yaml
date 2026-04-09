@@ -262,3 +262,29 @@ deployments:
         image: "{{ $PREFECT_DEPLOYMENT_IMAGE }}"
         env:
           SLACK_WEBHOOK_URL: "{{ prefect.variables.slack_webhook_url }}"
+
+  # ---------------------------------------------------------------------------
+  # 14 — Flow Level Caching
+  # Run `generate-gcs-report`, which orchestrates the transform flow to generate a report.
+  # ---------------------------------------------------------------------------
+  - name: generate-gcs-report
+    entrypoint: examples/14_flow_level_caching.py:generate_report
+    version: "{{ get-commit-hash.stdout }}"
+    tags: [example, caching, concurrency]
+    work_pool:
+      name: "{{ $PREFECT_WORK_POOL_NAME }}"
+      job_variables:
+        image: "{{ $PREFECT_DEPLOYMENT_IMAGE }}"
+        env:
+          GCS_RESULT_BUCKET: "{{ $GCS_RESULT_BUCKET }}"
+
+  - name: transform-gcs-report-data
+    entrypoint: examples/14_flow_level_caching.py:transform_data
+    version: "{{ get-commit-hash.stdout }}"
+    tags: [example, caching, concurrency]
+    work_pool:
+      name: "{{ $PREFECT_WORK_POOL_NAME }}"
+      job_variables:
+        image: "{{ $PREFECT_DEPLOYMENT_IMAGE }}"
+        env:
+          GCS_RESULT_BUCKET: "{{ $GCS_RESULT_BUCKET }}"
