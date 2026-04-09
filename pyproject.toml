@@ -1,5 +1,5 @@
 [project]
-name = "mm2-sanbox"
+name = "support-sandbox"
 version = "0.2.0"
 description = "Prefect examples and patterns"
 requires-python = ">=3.12"

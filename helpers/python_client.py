@@ -91,7 +91,7 @@ if __name__ == "__main__":
     pull_steps = [
         {
             "prefect.deployments.steps.git_clone": {
-                "repository": "https://github.com/masonmenges/mm2-sanbox.git",
+                "repository": "https://github.com/prefectlabs/Support-Sandbox.git",
                 "branch": "main",
             }
         }
