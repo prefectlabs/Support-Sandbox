@@ -201,10 +201,10 @@ deployments:
         image: "{{ $PREFECT_DEPLOYMENT_IMAGE }}"
 
   # ---------------------------------------------------------------------------
-  # 12 — Flow Level Caching
+  # 14 — Flow Level Caching
   # ---------------------------------------------------------------------------
   - name: generate-gcs-report
-    entrypoint: examples/12_flow_level_caching.py:generate_report_flow
+    entrypoint: examples/14_flow_level_caching.py:generate_report
     version: "{{ get-commit-hash.stdout }}"
     tags: [example, caching, concurrency]
     work_pool:
@@ -213,7 +213,7 @@ deployments:
         image: "{{ $PREFECT_DEPLOYMENT_IMAGE }}"
 
   - name: transform-gcs-report-data
-    entrypoint: examples/12_flow_level_caching.py:transform_data
+    entrypoint: examples/14_flow_level_caching.py:transform_data
     version: "{{ get-commit-hash.stdout }}"
     tags: [example, caching, concurrency]
     work_pool:

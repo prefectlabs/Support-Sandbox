@@ -45,7 +45,7 @@ def execute_query(
     sleep(randint(10, 20))
     logger.info("Query completed for source '%s'", source)
 
-    return f"gs://your-gcs-bucket/report_queries/{source}.parquet"
+    return f"gs://{GCS_RESULT_BUCKET}/report_queries/{source}.parquet"
 
 
 @flow(
@@ -68,7 +68,7 @@ def transform_data(result_uri: str) -> str:
 
     # grab the source name from the result URI to use as the output file name
     source = result_uri.split("/")[-1].split(".")[0]
-    return f"gs://your-gcs-bucket/transform_results/{source}.parquet"
+    return f"gs://{GCS_RESULT_BUCKET}/transform_results/{source}.parquet"
 
 
 @task(cache_policy=INPUTS, cache_expiration=timedelta(minutes=15))
