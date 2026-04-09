@@ -14,7 +14,7 @@ build:
 pull:
   - prefect.deployments.steps.git_clone:
       repository: https://github.com/prefectlabs/Support-Sandbox.git
-      branch: main
+      branch: feat/add-flow-level-caching-example
 
 deployments:
   # ---------------------------------------------------------------------------
@@ -211,6 +211,8 @@ deployments:
       name: "{{ $PREFECT_WORK_POOL_NAME }}"
       job_variables:
         image: "{{ $PREFECT_DEPLOYMENT_IMAGE }}"
+        env:
+          GCS_RESULT_BUCKET: "{{ $GCS_RESULT_BUCKET }}"
 
   - name: transform-gcs-report-data
     entrypoint: examples/14_flow_level_caching.py:transform_data
@@ -220,3 +222,5 @@ deployments:
       name: "{{ $PREFECT_WORK_POOL_NAME }}"
       job_variables:
         image: "{{ $PREFECT_DEPLOYMENT_IMAGE }}"
+        env:
+          GCS_RESULT_BUCKET: "{{ $GCS_RESULT_BUCKET }}"
